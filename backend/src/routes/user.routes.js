@@ -24,11 +24,21 @@ import { ROLES } from "../constants/roles.js";
 
 const router = express.Router();
 
-/**
- * Apply Authentication & Authorization
- * All User routes are Admin only
- */
 router.use(protect);
+
+/**
+ * @route   GET /api/v1/users
+ * @desc    Get All Users
+ * @access  Private (Admin & Sales)
+ */
+router.get(
+  "/",
+  getUsersValidation,
+  validate,
+  getUsers
+);
+
+// All subsequent routes require Admin authorization
 router.use(authorize(ROLES.ADMIN));
 
 /**
@@ -41,18 +51,6 @@ router.post(
   createUserValidation,
   validate,
   createSalesUser
-);
-
-/**
- * @route   GET /api/v1/users
- * @desc    Get All Users
- * @access  Admin
- */
-router.get(
-  "/",
-  getUsersValidation,
-  validate,
-  getUsers
 );
 
 /**

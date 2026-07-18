@@ -1,35 +1,31 @@
-import api, { extractApiData } from './api.js'
+import api from "./api";
 
-export const userService = {
-  createUser: async (payload) => {
-    const response = await api.post('/users', payload)
-    return extractApiData(response)
-  },
+const userService = {
 
-  getUsers: async (params = {}) => {
-    const response = await api.get('/users', { params })
-    return extractApiData(response)
-  },
+    getUsers(params) {
+        return api.get("/users", { params });
+    },
 
-  getUser: async (id) => {
-    const response = await api.get(`/users/${id}`)
-    return extractApiData(response)
-  },
+    getUser(id) {
+        return api.get(`/users/${id}`);
+    },
 
-  updateUser: async (id, payload) => {
-    const response = await api.put(`/users/${id}`, payload)
-    return extractApiData(response)
-  },
+    createUser(data) {
+        return api.post("/users", data);
+    },
 
-  toggleUserStatus: async (id) => {
-    const response = await api.patch(`/users/${id}/status`)
-    return extractApiData(response)
-  },
+    updateUser(id, data) {
+        return api.put(`/users/${id}`, data);
+    },
 
-  deleteUser: async (id) => {
-    const response = await api.delete(`/users/${id}`)
-    return extractApiData(response)
-  },
-}
+    toggleStatus(id) {
+        return api.patch(`/users/${id}/status`);
+    },
 
-export default userService
+    deleteUser(id) {
+        return api.delete(`/users/${id}`);
+    },
+
+};
+
+export default userService;

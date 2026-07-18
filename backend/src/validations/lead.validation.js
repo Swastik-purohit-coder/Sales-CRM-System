@@ -45,12 +45,12 @@ export const createLeadValidation = [
     .withMessage("Company name cannot exceed 100 characters."),
 
   body("source")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_SOURCE))
     .withMessage("Invalid lead source."),
 
   body("priority")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_PRIORITY))
     .withMessage("Invalid lead priority."),
 
@@ -100,12 +100,12 @@ export const updateLeadValidation = [
     .withMessage("Company name cannot exceed 100 characters."),
 
   body("source")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_SOURCE))
     .withMessage("Invalid lead source."),
 
   body("priority")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_PRIORITY))
     .withMessage("Invalid lead priority."),
 
@@ -162,27 +162,27 @@ export const getLeadsValidation = [
     .trim(),
 
   query("status")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_STATUS))
     .withMessage("Invalid lead status."),
 
   query("priority")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_PRIORITY))
     .withMessage("Invalid lead priority."),
 
   query("source")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(Object.values(LEAD_SOURCE))
     .withMessage("Invalid lead source."),
 
   query("assignedTo")
-    .optional()
+    .optional({ values: "falsy" })
     .isMongoId()
     .withMessage("Invalid assigned user ID."),
 
   query("sortBy")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn([
       "name",
       "company",
@@ -195,7 +195,7 @@ export const getLeadsValidation = [
     .withMessage("Invalid sort field."),
 
   query("order")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(["asc", "desc"])
     .withMessage("Order must be either asc or desc."),
 ];

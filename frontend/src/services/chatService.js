@@ -1,40 +1,43 @@
-import api, { extractApiData } from './api.js'
+import api from "./api";
 
-export const chatService = {
-  getConversations: async (params = {}) => {
-    const response = await api.get('/conversations', { params })
-    return extractApiData(response)
-  },
+const chatService = {
 
-  createConversation: async (payload) => {
-    const response = await api.post('/conversations', payload)
-    return extractApiData(response)
-  },
+    getConversations(params) {
+        return api.get("/conversations", { params });
+    },
 
-  getConversation: async (id) => {
-    const response = await api.get(`/conversations/${id}`)
-    return extractApiData(response)
-  },
+    getConversation(id) {
+        return api.get(`/conversations/${id}`);
+    },
 
-  deleteConversation: async (id) => {
-    const response = await api.delete(`/conversations/${id}`)
-    return extractApiData(response)
-  },
+    createConversation(data) {
+        return api.post("/conversations", data);
+    },
 
-  getMessages: async (conversationId, params = {}) => {
-    const response = await api.get(`/messages/${conversationId}`, { params })
-    return extractApiData(response)
-  },
+    deleteConversation(id) {
+        return api.delete(`/conversations/${id}`);
+    },
 
-  sendMessage: async (payload) => {
-    const response = await api.post('/messages', payload)
-    return extractApiData(response)
-  },
+    getMessages(id, params) {
+        return api.get(`/messages/${id}`, { params });
+    },
 
-  markMessageSeen: async (messageId) => {
-    const response = await api.patch(`/messages/${messageId}/seen`)
-    return extractApiData(response)
-  },
-}
+    getMessage(id) {
+        return api.get(`/messages/details/${id}`);
+    },
 
-export default chatService
+    sendMessage(data) {
+        return api.post("/messages", data);
+    },
+
+    seen(id) {
+        return api.patch(`/messages/${id}/seen`);
+    },
+
+    deleteMessage(id) {
+        return api.delete(`/messages/${id}`);
+    },
+
+};
+
+export default chatService;

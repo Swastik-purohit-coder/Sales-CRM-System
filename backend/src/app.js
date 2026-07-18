@@ -10,11 +10,22 @@ import notFound from "./middleware/notFound.middleware.js";
 import errorHandler from "./middleware/error.middleware.js";
 
 const app = express();
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5174";
 
 app.use(helmet());
 
+const allowedOrigins = [
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175"
+];
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true
 }));
 

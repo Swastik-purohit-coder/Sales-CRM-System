@@ -30,9 +30,19 @@ const server = http.createServer(app);
  * Socket.IO Configuration
  * ==========================================
  */
+const allowedOrigins = [
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:5175"
+];
+if (process.env.CLIENT_URL && !allowedOrigins.includes(process.env.CLIENT_URL)) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   },
 });

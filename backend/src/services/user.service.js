@@ -6,7 +6,7 @@ import { ROLES } from "../constants/roles.js";
  * Create Sales User
  */
 export const createUser = async (userData) => {
-  const { fullName, email, password, phone, avatar } = userData;
+  const { fullName, email, password, phone, avatar, role } = userData;
 
   // Check Email
   const emailExists = await User.findOne({
@@ -34,7 +34,7 @@ export const createUser = async (userData) => {
     password,
     phone,
     avatar,
-    role: ROLES.SALES,
+    role: role ? role.toLowerCase() : ROLES.SALES,
   });
 
   return await User.findById(user._id).select("-password");
@@ -138,6 +138,7 @@ export const updateUser = async (id, updateData) => {
     "email",
     "phone",
     "avatar",
+    "role",
   ];
 
   // Email validation
@@ -176,6 +177,8 @@ export const updateUser = async (id, updateData) => {
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) {
       if (field === "email") {
+        user[field] = updateData[field].toLowerCase();
+      } else if (field === "role") {
         user[field] = updateData[field].toLowerCase();
       } else {
         user[field] = updateData[field];

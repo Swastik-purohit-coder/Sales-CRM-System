@@ -39,7 +39,7 @@ const router = express.Router();
 router.get(
   "/overview",
   protect,
-  authorize(ROLES.ADMIN),
+  authorize(ROLES.ADMIN, ROLES.SALES),
   validateDashboardOverview,
   validate,
   dashboardOverview
@@ -54,7 +54,7 @@ router.get(
 router.get(
   "/cards",
   protect,
-  authorize(ROLES.ADMIN),
+  authorize(ROLES.ADMIN, ROLES.SALES),
   validateOverviewCards,
   validate,
   overviewCards
@@ -129,7 +129,7 @@ router.get(
 router.get(
   "/today-followups",
   protect,
-  authorize(ROLES.ADMIN),
+  authorize(ROLES.ADMIN, ROLES.SALES),
   validateTodayFollowUps,
   validate,
   todayFollowUps
@@ -144,7 +144,7 @@ router.get(
 router.get(
   "/recent-leads",
   protect,
-  authorize(ROLES.ADMIN),
+  authorize(ROLES.ADMIN, ROLES.SALES),
   validateRecentLeads,
   validate,
   recentLeads

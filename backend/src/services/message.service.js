@@ -63,6 +63,17 @@ export const sendMessage = async (
     validateBeforeSave: false,
   });
 
+  await createNotification({
+  recipient: receiver,
+  sender: currentUserId,
+  title: "New Message",
+  message: "You have received a new message.",
+  type: NOTIFICATION_TYPE.NEW_MESSAGE,
+  priority: NOTIFICATION_PRIORITY.MEDIUM,
+  referenceId: newMessage._id,
+  referenceModel: "Message",
+});
+
   return await Message.findById(newMessage._id)
     .populate("sender", "fullName email role")
     .populate("receiver", "fullName email role")
@@ -207,16 +218,6 @@ export const markMessageAsSeen = async (
   await message.save({
     validateBeforeSave: false,
   });
-  await createNotification({
-  recipient: receiverId,
-  sender: currentUserId,
-  title: "New Message",
-  message: "You have received a new message.",
-  type: NOTIFICATION_TYPE.NEW_MESSAGE,
-  priority: NOTIFICATION_PRIORITY.MEDIUM,
-  referenceId: message._id,
-  referenceModel: "Message",
-});
 
   return await Message.findById(message._id)
     .populate("sender", "fullName email role")

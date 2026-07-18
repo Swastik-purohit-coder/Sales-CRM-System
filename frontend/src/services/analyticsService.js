@@ -1,45 +1,47 @@
-import api, { extractApiData } from './api.js'
+import api from "./api";
 
-export const analyticsService = {
-	getOverview: async () => {
-		const response = await api.get('/dashboard/overview')
-		return extractApiData(response)
-	},
+const analyticsService = {
 
-	getCards: async () => {
-		const response = await api.get('/dashboard/cards')
-		return extractApiData(response)
-	},
+    overview() {
+        return api.get("/dashboard/overview").then(res => res.data?.data || res.data);
+    },
 
-	getLeadStatus: async () => {
-		const response = await api.get('/dashboard/lead-status')
-		return extractApiData(response)
-	},
+    getOverview() {
+        return api.get("/dashboard/overview").then(res => res.data?.data || res.data);
+    },
 
-	getLeadSource: async () => {
-		const response = await api.get('/dashboard/lead-source')
-		return extractApiData(response)
-	},
+    getDashboard() {
+        return api.get("/analytics").then(res => res.data?.data || res.data);
+    },
 
-	getMonthlyLeads: async () => {
-		const response = await api.get('/dashboard/monthly-leads')
-		return extractApiData(response)
-	},
+    cards() {
+        return api.get("/dashboard/cards").then(res => res.data?.data || res.data);
+    },
 
-	getTopSales: async (limit = 5) => {
-		const response = await api.get('/dashboard/top-sales', { params: { limit } })
-		return extractApiData(response)
-	},
+    leadStatus() {
+        return api.get("/dashboard/lead-status").then(res => res.data?.data || res.data);
+    },
 
-	getTodayFollowUps: async () => {
-		const response = await api.get('/dashboard/today-followups')
-		return extractApiData(response)
-	},
+    leadSource() {
+        return api.get("/dashboard/lead-source").then(res => res.data?.data || res.data);
+    },
 
-	getRecentLeads: async (limit = 10) => {
-		const response = await api.get('/dashboard/recent-leads', { params: { limit } })
-		return extractApiData(response)
-	},
-}
+    monthlyLeads() {
+        return api.get("/dashboard/monthly-leads").then(res => res.data?.data || res.data);
+    },
 
-export default analyticsService
+    topSales() {
+        return api.get("/dashboard/top-sales").then(res => res.data?.data || res.data);
+    },
+
+    todayFollowUps() {
+        return api.get("/dashboard/today-followups").then(res => res.data?.data || res.data);
+    },
+
+    recentLeads() {
+        return api.get("/dashboard/recent-leads").then(res => res.data?.data || res.data);
+    },
+
+};
+
+export default analyticsService;

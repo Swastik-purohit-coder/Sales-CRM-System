@@ -1,207 +1,223 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Plus, Search } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useEffect, useState } from "react";
 
-import Button from '../../components/common/Button.jsx'
-import EmptyState from '../../components/common/EmptyState.jsx'
-import Input from '../../components/common/Input.jsx'
-import Loader from '../../components/common/Loader.jsx'
-import Pagination from '../../components/common/Pagination.jsx'
-import UserFormModal from '../../components/users/UserFormModal.jsx'
-import UsersTable from '../../components/users/UsersTable.jsx'
-import useDebounce from '../../hooks/useDebounce.js'
-import userService from '../../services/userService.js'
-import { getApiErrorMessage } from '../../services/api.js'
+import userService from "../../services/userService";
 
-const DEFAULT_LIMIT = 8
+import UserTable from "../../components/users/UserTable";
+import UserFilters from "../../components/users/UserFilters";
+import UserFormModal from "../../components/users/UserFormModal";
+import DeleteUserModal from "../../components/users/DeleteUserModal";
+import UserDetailsDrawer from "../../components/users/UserDetailsDrawer";
+import UserLoadingSkeleton from "../../components/users/UserLoadingSkeleton";
+import UserEmptyState from "../../components/users/UserEmptyState";
+import UserPagination from "../../components/users/UserPagination";
 
 const Users = () => {
-  const [users, setUsers] = useState([])
-  const [pagination, setPagination] = useState({ page: 1, limit: DEFAULT_LIMIT, total: 0, totalPages: 0 })
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebounce(search, 400)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState('create')
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const params = useMemo(() => ({
-    page: pagination.page,
-    limit: pagination.limit,
-    search: debouncedSearch.trim(),
-    sortBy: 'createdAt',
-    order: 'desc',
-  }), [debouncedSearch, pagination.limit, pagination.page])
+    const [users, setUsers] = useState([]);
 
-  const loadUsers = async (loadingState = 'refresh') => {
-    if (loadingState === 'initial') {
-      setIsLoading(true)
-    } else {
-      setIsRefreshing(true)
-    }
+    const [loading, setLoading] = useState(true);
 
-    try {
-      const data = await userService.getUsers(params)
-      setUsers(data.users || [])
-      setPagination((current) => ({
-        ...current,
-        ...data.pagination,
-      }))
-    } catch (error) {
-      toast.error(getApiErrorMessage(error))
-    } finally {
-      setIsLoading(false)
-      setIsRefreshing(false)
-    }
-  }
+    const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    loadUsers(isLoading ? 'initial' : 'refresh')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.page, params.limit, params.search])
+    const [totalPages, setTotalPages] = useState(1);
 
-  const openCreateModal = () => {
-    setModalMode('create')
-    setSelectedUser(null)
-    setModalOpen(true)
-  }
+    const [filters, setFilters] = useState({
+        search: "",
+        role: "",
+        status: "",
+    });
 
-  const openEditModal = (user) => {
-    setModalMode('edit')
-    setSelectedUser(user)
-    setModalOpen(true)
-  }
+    const [showForm, setShowForm] = useState(false);
 
-  const closeModal = () => {
-    setModalOpen(false)
-    setSelectedUser(null)
-  }
+    const [showDelete, setShowDelete] = useState(false);
 
-  const handleSubmitUser = async (payload) => {
-    setIsSubmitting(true)
+    const [showDrawer, setShowDrawer] = useState(false);
 
-    try {
-      if (modalMode === 'create') {
-        await userService.createUser(payload)
-        toast.success('Sales user created successfully')
-      } else if (selectedUser) {
-        await userService.updateUser(selectedUser._id, payload)
-        toast.success('User updated successfully')
-      }
+    const [selectedUser, setSelectedUser] = useState(null);
 
-      closeModal()
-      await loadUsers('refresh')
-    } catch (error) {
-      toast.error(getApiErrorMessage(error))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+    useEffect(() => {
 
-  const handleToggleStatus = async (user) => {
-    const confirmText = user.isActive ? 'deactivate' : 'activate'
+        loadUsers();
 
-    if (!window.confirm(`Are you sure you want to ${confirmText} ${user.fullName}?`)) {
-      return
-    }
+    }, [page, filters]);
 
-    try {
-      await userService.toggleUserStatus(user._id)
-      toast.success(`User ${confirmText}d successfully`)
-      await loadUsers('refresh')
-    } catch (error) {
-      toast.error(getApiErrorMessage(error))
-    }
-  }
+    const loadUsers = async () => {
 
-  const handleDelete = async (user) => {
-    if (!window.confirm(`Delete ${user.fullName}? This action cannot be undone.`)) {
-      return
-    }
+        setLoading(true);
 
-    try {
-      await userService.deleteUser(user._id)
-      toast.success('User deleted successfully')
-      await loadUsers('refresh')
-    } catch (error) {
-      toast.error(getApiErrorMessage(error))
-    }
-  }
+        try {
 
-  return (
-    <div className="space-y-6">
-      <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-600">User management</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Sales users</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
-              Search, create, update, activate, deactivate, and soft-delete sales users using the exact backend contract.
-            </p>
-          </div>
+            const res = await userService.getUsers({
+                page,
+                ...filters,
+            });
 
-          <Button onClick={openCreateModal} leftIcon={<Plus className="h-4 w-4" />}>
-            Add sales user
-          </Button>
-        </div>
+            const data = res.data?.data || res.data;
 
-        <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <Input
-            label="Search users"
-            placeholder="Search by name, email, or phone"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            leftIcon={<Search className="h-4 w-4" />}
-          />
+            setUsers(data.users || data);
 
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              {pagination.total || 0} total users
+            setTotalPages(
+                data.totalPages || 1
+            );
+
+        } catch (err) {
+
+            console.log(err);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    const openCreateModal = () => {
+
+        setSelectedUser(null);
+
+        setShowForm(true);
+
+    };
+
+    const openEditModal = (user) => {
+
+        setSelectedUser(user);
+
+        setShowForm(true);
+
+    };
+
+    const openDeleteModal = (user) => {
+
+        setSelectedUser(user);
+
+        setShowDelete(true);
+
+    };
+
+    const openDrawer = (user) => {
+
+        setSelectedUser(user);
+
+        setShowDrawer(true);
+
+    };
+
+    const toggleStatus = async (user) => {
+
+        try {
+
+            await userService.toggleStatus(
+                user._id
+            );
+
+            loadUsers();
+
+        } catch (err) {
+
+            console.log(err);
+
+        }
+
+    };
+
+    return (
+
+        <div className="page-container">
+
+            <div className="page-header">
+
+                <div>
+
+                    <h1>
+
+                        Users
+
+                    </h1>
+
+                    <p>
+
+                        Manage all CRM users.
+
+                    </p>
+
+                </div>
+
+                <button
+                    onClick={openCreateModal}
+                >
+
+                    + Add User
+
+                </button>
+
             </div>
-            {isRefreshing ? <Loader label="Refreshing" /> : null}
-          </div>
+
+            <UserFilters
+                filters={filters}
+                setFilters={setFilters}
+            />
+
+            {loading ? (
+
+                <UserLoadingSkeleton />
+
+            ) : users.length === 0 ? (
+
+                <UserEmptyState />
+
+            ) : (
+
+                <>
+
+                    <div className="table-container-responsive">
+
+                        <UserTable
+                            users={users}
+                            loading={loading}
+                            onEdit={openEditModal}
+                            onDelete={openDeleteModal}
+                            onStatus={toggleStatus}
+                            onView={openDrawer}
+                        />
+
+                    </div>
+
+                    <UserPagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                    />
+
+                </>
+
+            )}
+
+            <UserFormModal
+                open={showForm}
+                close={() => setShowForm(false)}
+                refresh={loadUsers}
+                editUser={selectedUser}
+            />
+
+            <DeleteUserModal
+                open={showDelete}
+                close={() => setShowDelete(false)}
+                refresh={loadUsers}
+                user={selectedUser}
+            />
+
+            <UserDetailsDrawer
+                open={showDrawer}
+                close={() => setShowDrawer(false)}
+                user={selectedUser}
+            />
+
         </div>
-      </section>
 
-      {isLoading ? (
-        <div className="rounded-[28px] border border-slate-200 bg-white p-10 shadow-sm">
-          <Loader fullScreen label="Loading users" />
-        </div>
-      ) : users.length ? (
-        <>
-          <UsersTable
-            users={users}
-            onEdit={openEditModal}
-            onToggleStatus={handleToggleStatus}
-            onDelete={handleDelete}
-          />
+    );
 
-          <Pagination
-            pagination={pagination}
-            onPageChange={(page) => setPagination((current) => ({ ...current, page }))}
-          />
-        </>
-      ) : (
-        <EmptyState
-          title="No users found"
-          description={search ? 'Try a different search term or clear the current search.' : 'Create the first sales user to get started.'}
-          actionLabel="Add sales user"
-          onAction={openCreateModal}
-        />
-      )}
+};
 
-      <UserFormModal
-        open={modalOpen}
-        mode={modalMode}
-        user={selectedUser}
-        onClose={closeModal}
-        onSubmit={handleSubmitUser}
-        isSubmitting={isSubmitting}
-      />
-    </div>
-  )
-}
-
-export default Users
+export default Users;

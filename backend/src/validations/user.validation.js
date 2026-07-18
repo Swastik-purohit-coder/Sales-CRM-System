@@ -33,7 +33,7 @@ export const createUserValidation = [
     .withMessage("Please enter a valid 10-digit Indian phone number."),
 
   body("avatar")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
     .isURL()
     .withMessage("Avatar must be a valid URL."),
@@ -63,7 +63,7 @@ export const updateUserValidation = [
     .withMessage("Please enter a valid 10-digit Indian phone number."),
 
   body("avatar")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
     .isURL()
     .withMessage("Avatar must be a valid URL."),
@@ -83,23 +83,23 @@ export const userIdValidation = [
  */
 export const getUsersValidation = [
   query("page")
-    .optional()
+    .optional({ values: "falsy" })
     .isInt({ min: 1 })
     .withMessage("Page must be greater than or equal to 1.")
     .toInt(),
 
   query("limit")
-    .optional()
+    .optional({ values: "falsy" })
     .isInt({ min: 1, max: 100 })
     .withMessage("Limit must be between 1 and 100.")
     .toInt(),
 
   query("search")
-    .optional()
+    .optional({ values: "falsy" })
     .trim(),
 
   query("sortBy")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn([
       "fullName",
       "email",
@@ -111,7 +111,7 @@ export const getUsersValidation = [
     .withMessage("Invalid sort field."),
 
   query("order")
-    .optional()
+    .optional({ values: "falsy" })
     .isIn(["asc", "desc"])
     .withMessage("Order must be either asc or desc."),
 ];

@@ -6,6 +6,7 @@ import authRoutes from "./auth.routes.js";
 import userRoutes from "./user.routes.js";
 import leadRoutes from "./lead.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
+import analyticsRoutes from "./analytics.routes.js";
 import activityRoutes from "./activity.routes.js";
 import conversationRoutes from "./conversation.routes.js";
 import messageRoutes from "./message.routes.js";
@@ -29,6 +30,7 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/leads", leadRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/analytics", analyticsRoutes);
 router.use("/activities", activityRoutes);
 router.use("/conversations", conversationRoutes);
 

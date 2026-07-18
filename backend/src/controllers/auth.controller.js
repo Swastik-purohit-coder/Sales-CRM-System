@@ -1,6 +1,9 @@
 import { loginUser, logoutUser } from "../services/auth.service.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import Lead from "../models/Lead.js";
+import Message from "../models/Message.js";
+import Activity from "../models/Activity.js";
 
 /**
  * @desc Login User
@@ -59,11 +62,35 @@ export const logout = asyncHandler(async (req, res) => {
  * @access Private
  */
 export const getProfile = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const [assigned, won, lost, messages, activities] = await Promise.all([
+    Lead.countDocuments({ assignedTo: userId, isDeleted: false }),
+    Lead.countDocuments({ assignedTo: userId, isDeleted: false, status: "WON" }),
+    Lead.countDocuments({ assignedTo: userId, isDeleted: false, status: "LOST" }),
+    Message.countDocuments({ sender: userId }),
+    Activity.find({ performedBy: userId, isDeleted: false })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean()
+  ]);
+
+  const profileData = {
+    user: req.user,
+    stats: {
+      assigned,
+      won,
+      lost,
+      messages
+    },
+    activities
+  };
+
   res.status(200).json(
     new ApiResponse(
       200,
       "Profile fetched successfully",
-      req.user
+      profileData
     )
   );
 });

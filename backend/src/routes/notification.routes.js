@@ -56,6 +56,11 @@ router.get(
   getUnreadNotificationCountController
 );
 
+router.get(
+  "/unread",
+  getUnreadNotificationCountController
+);
+
 // Mark All Notifications As Read
 router.patch(
   "/read-all",

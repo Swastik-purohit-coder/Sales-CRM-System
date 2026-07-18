@@ -1,40 +1,39 @@
-import api, { extractApiData } from './api.js'
+import api from "./api";
 
-export const leadService = {
-  createLead: async (payload) => {
-    const response = await api.post('/leads', payload)
-    return extractApiData(response)
-  },
+const leadService = {
 
-  getLeads: async (params = {}) => {
-    const response = await api.get('/leads', { params })
-    return extractApiData(response)
-  },
+    getLeads(params) {
+        return api.get("/leads", { params });
+    },
 
-  getLead: async (id) => {
-    const response = await api.get(`/leads/${id}`)
-    return extractApiData(response)
-  },
+    getLead(id) {
+        return api.get(`/leads/${id}`);
+    },
 
-  updateLead: async (id, payload) => {
-    const response = await api.put(`/leads/${id}`, payload)
-    return extractApiData(response)
-  },
+    createLead(data) {
+        return api.post("/leads", data);
+    },
 
-  assignLead: async (id, payload) => {
-    const response = await api.patch(`/leads/${id}/assign`, payload)
-    return extractApiData(response)
-  },
+    updateLead(id, data) {
+        return api.put(`/leads/${id}`, data);
+    },
 
-  updateLeadStatus: async (id, payload) => {
-    const response = await api.patch(`/leads/${id}/status`, payload)
-    return extractApiData(response)
-  },
+    assignLead(id, assignedTo) {
+        return api.patch(`/leads/${id}/assign`, {
+            assignedTo,
+        });
+    },
 
-  deleteLead: async (id) => {
-    const response = await api.delete(`/leads/${id}`)
-    return extractApiData(response)
-  },
-}
+    updateStatus(id, status) {
+        return api.patch(`/leads/${id}/status`, {
+            status,
+        });
+    },
 
-export default leadService
+    deleteLead(id) {
+        return api.delete(`/leads/${id}`);
+    },
+
+};
+
+export default leadService;

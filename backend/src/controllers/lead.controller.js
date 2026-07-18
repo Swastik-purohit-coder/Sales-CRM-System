@@ -30,7 +30,7 @@ export const createNewLead = asyncHandler(async (req, res) => {
  * @access Private
  */
 export const getLeads = asyncHandler(async (req, res) => {
-  const result = await getAllLeads(req.query);
+  const result = await getAllLeads(req.query, req.user);
 
   res
     .status(200)
@@ -71,7 +71,7 @@ export const updateLeadDetails = asyncHandler(async (req, res) => {
 export const assignLeadToSales = asyncHandler(async (req, res) => {
   const { assignedTo } = req.body;
 
-  const lead = await assignLead(req.params.id, assignedTo);
+  const lead = await assignLead(req.params.id, assignedTo, req.user._id);
 
   res
     .status(200)
@@ -91,7 +91,7 @@ export const changeLeadStatus = asyncHandler(async (req, res) => {
   const lead = await updateLeadStatus(
     req.params.id,
     status,
-    req.user
+    req.user._id
   );
 
   res

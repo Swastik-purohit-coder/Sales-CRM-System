@@ -6,12 +6,18 @@ import { LEAD_STATUS } from "../constants/lead.constants.js";
 /**
  * Dashboard Overview
  */
-export const getOverview = async () => {
+export const getOverview = async (user) => {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
+
+  const isSales = user?.role?.toLowerCase() === ROLES.SALES;
+  const leadFilter = { isDeleted: false };
+  if (isSales) {
+    leadFilter.assignedTo = user._id;
+  }
 
   const [
     totalLeads,
@@ -20,42 +26,55 @@ export const getOverview = async () => {
     activeLeads,
     todayFollowUps,
     totalSalesExecutives,
+    newLeads,
   ] = await Promise.all([
-    Lead.countDocuments({
-      isDeleted: false,
-    }),
+    Lead.countDocuments(leadFilter),
 
     Lead.countDocuments({
-      isDeleted: false,
+      ...leadFilter,
       status: LEAD_STATUS.WON,
     }),
 
     Lead.countDocuments({
-      isDeleted: false,
+      ...leadFilter,
       status: LEAD_STATUS.LOST,
     }),
 
     Lead.countDocuments({
-      isDeleted: false,
+      ...leadFilter,
       status: {
         $nin: [LEAD_STATUS.WON, LEAD_STATUS.LOST],
       },
     }),
 
     Lead.countDocuments({
-      isDeleted: false,
+      ...leadFilter,
       followUpDate: {
         $gte: startOfToday,
         $lte: endOfToday,
       },
     }),
 
-    User.countDocuments({
-      role: ROLES.SALES,
-      isDeleted: false,
-      isActive: true,
+    isSales
+      ? 0
+      : User.countDocuments({
+          role: ROLES.SALES,
+          isDeleted: false,
+          isActive: true,
+        }),
+
+    Lead.countDocuments({
+      ...leadFilter,
+      status: LEAD_STATUS.NEW,
     }),
   ]);
+
+  const cards = {
+    totalLeads,
+    newLeads,
+    wonLeads,
+    lostLeads,
+  };
 
   return {
     totalLeads,
@@ -64,6 +83,7 @@ export const getOverview = async () => {
     lostLeads,
     todayFollowUps,
     totalSalesExecutives,
+    cards,
   };
 };
 
@@ -279,20 +299,26 @@ export const getTopSalesExecutives = async (limit = 5) => {
 /**
  * Today's Follow Ups
  */
-export const getTodayFollowUps = async () => {
+export const getTodayFollowUps = async (user) => {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
 
-  return await Lead.find({
+  const query = {
     isDeleted: false,
     followUpDate: {
       $gte: startOfToday,
       $lte: endOfToday,
     },
-  })
+  };
+
+  if (user?.role?.toLowerCase() === ROLES.SALES) {
+    query.assignedTo = user._id;
+  }
+
+  return await Lead.find(query)
     .populate("assignedTo", "fullName email phone")
     .populate("createdBy", "fullName email")
     .sort({
@@ -304,10 +330,13 @@ export const getTodayFollowUps = async () => {
 /**
  * Recent Leads
  */
-export const getRecentLeads = async (limit = 10) => {
-  return await Lead.find({
-    isDeleted: false,
-  })
+export const getRecentLeads = async (limit = 10, user) => {
+  const query = { isDeleted: false };
+  if (user?.role?.toLowerCase() === ROLES.SALES) {
+    query.assignedTo = user._id;
+  }
+
+  return await Lead.find(query)
     .populate("assignedTo", "fullName email")
     .populate("createdBy", "fullName email")
     .sort({
@@ -320,7 +349,9 @@ export const getRecentLeads = async (limit = 10) => {
 /**
  * Complete Dashboard
  */
-export const getDashboardOverview = async () => {
+export const getDashboardOverview = async (user) => {
+  const isSales = user?.role?.toLowerCase() === ROLES.SALES;
+
   const [
     overview,
     leadStatus,
@@ -330,13 +361,13 @@ export const getDashboardOverview = async () => {
     todayFollowUps,
     recentLeads,
   ] = await Promise.all([
-    getOverview(),
-    getLeadStatusStats(),
-    getLeadSourceStats(),
-    getMonthlyLeadStats(),
-    getTopSalesExecutives(),
-    getTodayFollowUps(),
-    getRecentLeads(),
+    getOverview(user),
+    isSales ? [] : getLeadStatusStats(),
+    isSales ? [] : getLeadSourceStats(),
+    isSales ? [] : getMonthlyLeadStats(),
+    isSales ? [] : getTopSalesExecutives(),
+    getTodayFollowUps(user),
+    getRecentLeads(10, user),
   ]);
 
   return {
@@ -347,5 +378,6 @@ export const getDashboardOverview = async () => {
     topSalesExecutives,
     todayFollowUps,
     recentLeads,
+    cards: overview.cards,
   };
 };

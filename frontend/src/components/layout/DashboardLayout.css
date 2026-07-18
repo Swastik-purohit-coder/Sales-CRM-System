@@ -1,0 +1,90 @@
+:root {
+  --primary-color: #2563EB;
+  --primary-hover: #1D4ED8;
+  --sidebar-bg: #0F172A;
+  --sidebar-hover-bg: #1E293B;
+  --sidebar-text: #94A3B8;
+  --sidebar-text-active: #FFFFFF;
+  --bg-color: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --border-color: #E5E7EB;
+  --text-color: #111827;
+  --text-muted: #6B7280;
+  --success-color: #22C55E;
+  --danger-color: #EF4444;
+  --warning-color: #F59E0B;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg-color: #0b0f19;
+  --card-bg: #111827;
+  --border-color: #1f2937;
+  --text-color: #f3f4f6;
+  --text-muted: #9ca3af;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-color);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  position: relative;
+  transition: var(--transition-all);
+}
+
+/* On desktop, push main content if sidebar is fixed */
+@media (min-width: 1024px) {
+  .dashboard-main {
+    margin-left: 260px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-main {
+    margin-left: 80px;
+  }
+}
+
+.dashboard-content-wrapper {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: calc(100vh - 72px - 60px); /* Subtract Navbar and Footer height */
+}
+
+/* Sidebar overlay for mobile drawer */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -95,7 +95,7 @@ export const getAllLeads = async ({
   assignedTo,
   sortBy = "createdAt",
   order = "desc",
-}) => {
+}, user) => {
   const query = {
     isDeleted: false,
   };
@@ -103,7 +103,12 @@ export const getAllLeads = async ({
   if (status) query.status = status;
   if (priority) query.priority = priority;
   if (source) query.source = source;
-  if (assignedTo) query.assignedTo = assignedTo;
+  
+  if (user?.role?.toLowerCase() === ROLES.SALES) {
+    query.assignedTo = user._id;
+  } else if (assignedTo) {
+    query.assignedTo = assignedTo;
+  }
 
   if (search) {
     query.$or = [
@@ -226,7 +231,7 @@ export const updateLead = async (id, updateData) => {
 /**
  * Assign / Reassign Lead
  */
-export const assignLead = async (leadId, salesUserId) => {
+export const assignLead = async (leadId, salesUserId, currentUserId) => {
   const lead = await Lead.findOne({
     _id: leadId,
     isDeleted: false,
@@ -290,7 +295,7 @@ export const assignLead = async (leadId, salesUserId) => {
 /**
  * Update Lead Status
  */
-export const updateLeadStatus = async (leadId, status) => {
+export const updateLeadStatus = async (leadId, status, currentUserId) => {
   const lead = await Lead.findOne({
     _id: leadId,
     isDeleted: false,

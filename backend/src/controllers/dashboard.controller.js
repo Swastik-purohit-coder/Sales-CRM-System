@@ -17,13 +17,13 @@ import {
  * GET /dashboard/overview
  */
 export const dashboardOverview = asyncHandler(async (req, res) => {
-  const dashboard = await getDashboardOverview();
+  const dashboard = await getDashboardOverview(req.user);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      dashboard,
-      "Dashboard overview fetched successfully."
+      "Dashboard overview fetched successfully.",
+      dashboard
     )
   );
 });
@@ -33,13 +33,13 @@ export const dashboardOverview = asyncHandler(async (req, res) => {
  * GET /dashboard/cards
  */
 export const overviewCards = asyncHandler(async (req, res) => {
-  const overview = await getOverview();
+  const overview = await getOverview(req.user);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      overview,
-      "Overview cards fetched successfully."
+      "Overview cards fetched successfully.",
+      overview
     )
   );
 });
@@ -54,8 +54,8 @@ export const leadStatusStatistics = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(
       200,
-      statistics,
-      "Lead status statistics fetched successfully."
+      "Lead status statistics fetched successfully.",
+      statistics
     )
   );
 });
@@ -70,8 +70,8 @@ export const leadSourceStatistics = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(
       200,
-      statistics,
-      "Lead source statistics fetched successfully."
+      "Lead source statistics fetched successfully.",
+      statistics
     )
   );
 });
@@ -86,8 +86,8 @@ export const monthlyLeadStatistics = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(
       200,
-      statistics,
-      "Monthly lead statistics fetched successfully."
+      "Monthly lead statistics fetched successfully.",
+      statistics
     )
   );
 });
@@ -104,8 +104,8 @@ export const topSalesExecutives = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(
       200,
-      result,
-      "Top sales executives fetched successfully."
+      "Top sales executives fetched successfully.",
+      result
     )
   );
 });
@@ -115,13 +115,13 @@ export const topSalesExecutives = asyncHandler(async (req, res) => {
  * GET /dashboard/today-followups
  */
 export const todayFollowUps = asyncHandler(async (req, res) => {
-  const followUps = await getTodayFollowUps();
+  const followUps = await getTodayFollowUps(req.user);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      followUps,
-      "Today's follow-ups fetched successfully."
+      "Today's follow-ups fetched successfully.",
+      followUps
     )
   );
 });
@@ -133,13 +133,13 @@ export const todayFollowUps = asyncHandler(async (req, res) => {
 export const recentLeads = asyncHandler(async (req, res) => {
   const { limit = 10 } = req.query;
 
-  const leads = await getRecentLeads(limit);
+  const leads = await getRecentLeads(limit, req.user);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      leads,
-      "Recent leads fetched successfully."
+      "Recent leads fetched successfully.",
+      leads
     )
   );
 });
