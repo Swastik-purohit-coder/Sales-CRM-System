@@ -22,14 +22,12 @@ const LeadAssignModal = ({
 
     const loadUsers = async () => {
         try {
-            const res = await userService.getUsers({ limit: 100 });
+            // Fetch all users without limiting; backend may paginate but we request a large limit
+            const res = await userService.getUsers();
             const data = res.data?.data || res.data;
             const allUsers = data.users || data || [];
-            // Only list active sales users for lead assignment
-            const salesUsers = allUsers.filter(
-                (u) => u.role?.toLowerCase() === "sales" && u.isActive
-            );
-            setUsers(salesUsers);
+            // Show all active users (or all users) for assignment
+            setUsers(allUsers.filter(u => u.isActive));
         } catch (err) {
             console.error("Failed to load users:", err);
         }
