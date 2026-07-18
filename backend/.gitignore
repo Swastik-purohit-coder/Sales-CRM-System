@@ -1,0 +1,118 @@
+# ==========================
+# Node Modules
+# ==========================
+node_modules/
+**/node_modules/
+
+# ==========================
+# Build Files
+# ==========================
+dist/
+build/
+**/dist/
+**/build/
+
+# ==========================
+# Environment Files
+# ==========================
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Logs
+# ==========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================
+# OS Files
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# VS Code
+# ==========================
+.vscode/
+.history/
+
+# ==========================
+# JetBrains
+# ==========================
+.idea/
+
+# ==========================
+# Temporary Files
+# ==========================
+*.tmp
+*.temp
+.cache/
+coverage/
+
+# ==========================
+# Runtime Files
+# ==========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ==========================
+# MongoDB
+# ==========================
+*.mongodb
+dump/
+
+# ==========================
+# Uploads (if generated)
+# ==========================
+uploads/
+public/uploads/
+
+# ==========================
+# Package Manager
+# ==========================
+
+yarn.lock
+pnpm-lock.yaml
+
+# Uncomment ONLY if you don't want lock files
+# (Recommended to keep package-lock.json for projects)
+
+# ==========================
+# Vite
+# ==========================
+.vite/
+
+# ==========================
+# ESLint Cache
+# ==========================
+.eslintcache
+
+# ==========================
+# Mac
+# ==========================
+.AppleDouble
+.LSOverride
+
+# ==========================
+# Windows
+# ==========================
+Desktop.ini
+
+# ==========================
+# Local Netlify/Vercel
+# ==========================
+.vercel/
+.netlify/
+
+# ==========================
+# Misc
+# ==========================
+*.tgz
+*.zip
