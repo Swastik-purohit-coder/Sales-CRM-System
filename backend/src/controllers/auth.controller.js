@@ -15,14 +15,13 @@ export const login = asyncHandler(async (req, res) => {
 
   const { token, user } = await loginUser(email, password);
 
- const cookieOptions = {
+  const isProd = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
+  const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production"
-        ? "none"
-        : "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
-};
+  };
 
   res
     .status(200)
@@ -43,16 +42,14 @@ export const login = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (req, res) => {
   const result = await logoutUser();
 
+  const isProd = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forwarded-proto"] === "https";
   res
     .status(200)
     .clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite:
-        process.env.NODE_ENV === "production"
-            ? "none"
-            : "lax",
-})
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+    })
     .json(new ApiResponse(200, result.message));
 });
 

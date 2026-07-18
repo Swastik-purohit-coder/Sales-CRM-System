@@ -7,7 +7,11 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io(import.meta.env.VITE_API_URL, {
+        const socketUrl = import.meta.env.VITE_API_URL
+            ? import.meta.env.VITE_API_URL.replace(/\/api\/v1\/?$/, "")
+            : "http://localhost:5000";
+
+        const newSocket = io(socketUrl, {
             withCredentials: true,
         });
 

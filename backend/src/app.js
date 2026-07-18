@@ -11,24 +11,27 @@ import errorHandler from "./middleware/error.middleware.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 // Allowed Origins
 const allowedOrigins = [
+  "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
+  "http://127.0.0.1:3000",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
   "http://127.0.0.1:5175",
 ];
 
-// Add deployed frontend URL from environment
-if (
-  process.env.CLIENT_URL &&
-  !allowedOrigins.includes(process.env.CLIENT_URL)
-) {
-  allowedOrigins.push(process.env.CLIENT_URL);
+if (process.env.CLIENT_URL) {
+  const normalizedUrl = process.env.CLIENT_URL.replace(/\/$/, "");
+  if (!allowedOrigins.includes(normalizedUrl)) {
+    allowedOrigins.push(normalizedUrl);
+  }
 }
 
 // CORS Configuration
@@ -40,11 +43,16 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      const normalizedOrigin = origin.replace(/\/$/, "");
+      const isAllowed = allowedOrigins.some(
+        (allowed) => allowed.replace(/\/$/, "") === normalizedOrigin
+      );
+
+      if (isAllowed) {
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
   })
